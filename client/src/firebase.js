@@ -11,6 +11,9 @@ const firebaseConfig = {
   storageBucket: 'mern-estate.appspot.com',
   messagingSenderId: "495036906071",
   appId: "1:495036906071:web:21414d6be45be914eec112"
+
+
+  
 };
 
 // Initialize Firebase
