@@ -13,8 +13,10 @@ import {
   FaMapMarkerAlt,
   FaParking,
   FaShare,
+  FaCreditCard,
 } from 'react-icons/fa';
 import Contact from '../components/Contact';
+import PaymentForm from '../components/PaymentForm';
 
 // https://sabe.io/blog/javascript-format-numbers-commas#:~:text=The%20best%20way%20to%20format,format%20the%20number%20with%20commas.
 
@@ -25,6 +27,7 @@ export default function Listing() {
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const params = useParams();
   const { currentUser } = useSelector((state) => state.user);
 
@@ -50,6 +53,16 @@ export default function Listing() {
     fetchListing();
   }, [params.listingId]);
 
+  const handlePaymentSuccess = (data) => {
+    setShowPayment(false);
+    // You can add success notification here
+    alert('Payment completed successfully!');
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPayment(false);
+  };
+
   return (
     <main>
       {loading && <p className='text-center my-7 text-2xl text-emerald-700'>Loading...</p>}
@@ -67,6 +80,8 @@ export default function Listing() {
                     background: `url(${url}) center no-repeat`,
                     backgroundSize: 'cover',
                   }}
+                  role="img"
+                  aria-label={`Property image: ${listing.name}`}
                 ></div>
               </SwiperSlide>
             ))}
@@ -81,6 +96,8 @@ export default function Listing() {
                   setCopied(false);
                 }, 2000);
               }}
+              role="button"
+              aria-label="Share listing"
             />
           </div>
           {copied && (
@@ -101,50 +118,68 @@ export default function Listing() {
               {listing.address}
             </p>
             <div className='flex gap-4'>
-              <p className='bg-emerald-600 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
-                {listing.type === 'rent' ? 'For Rent' : 'For Sale'}
+              <p className='bg-red-900 text-white max-w-[200px] rounded-md p-1 text-center'>
+                {listing.type === 'rent' ? 'RENT' : 'SALE'}
               </p>
               {listing.offer && (
-                <p className='bg-orange-600 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
-                  ${+listing.regularPrice - +listing.discountPrice} OFF
+                <p className='bg-emerald-900 text-white max-w-[200px] rounded-md p-1 text-center'>
+                  ${(+listing.regularPrice - +listing.discountPrice).toLocaleString('en-US')} OFF
                 </p>
               )}
             </div>
-            <p className='text-emerald-700'>
-              <span className='font-semibold text-emerald-800'>Description - </span>
+            <p className='text-emerald-800'>
+              <span className='font-semibold text-black'>Description - </span>
               {listing.description}
             </p>
-            <ul className='text-emerald-700 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaBed className='text-lg text-orange-600' />
-                {listing.bedrooms > 1
-                  ? `${listing.bedrooms} beds `
-                  : `${listing.bedrooms} bed `}
+            <ul className='text-emerald-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6'>
+              <li className='flex items-center gap-1 whitespace-nowrap'>
+                <FaBed className='text-lg' />
+                <span>{listing.bedrooms > 1 ? `${listing.bedrooms} beds` : '1 bed'}</span>
               </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaBath className='text-lg text-orange-600' />
-                {listing.bathrooms > 1
-                  ? `${listing.bathrooms} baths `
-                  : `${listing.bathrooms} bath `}
+              <li className='flex items-center gap-1 whitespace-nowrap'>
+                <FaBath className='text-lg' />
+                <span>{listing.bathrooms > 1 ? `${listing.bathrooms} baths` : '1 bath'}</span>
               </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaParking className='text-lg text-orange-600' />
-                {listing.parking ? 'Parking spot' : 'No Parking'}
+              <li className='flex items-center gap-1 whitespace-nowrap'>
+                <FaParking className='text-lg' />
+                <span>{listing.parking ? 'Parking spot' : 'No parking'}</span>
               </li>
-              <li className='flex items-center gap-1 whitespace-nowrap '>
-                <FaChair className='text-lg text-orange-600' />
-                {listing.furnished ? 'Furnished' : 'Unfurnished'}
+              <li className='flex items-center gap-1 whitespace-nowrap'>
+                <FaChair className='text-lg' />
+                <span>{listing.furnished ? 'Furnished' : 'Unfurnished'}</span>
               </li>
             </ul>
             {currentUser && listing.userRef !== currentUser._id && !contact && (
-              <button
-                onClick={() => setContact(true)}
-                className='bg-emerald-600 text-white rounded-lg uppercase hover:bg-emerald-700 transition-colors p-3'
-              >
-                Contact Seller
-              </button>
+              <div className='flex gap-4'>
+                <button
+                  onClick={() => setContact(true)}
+                  className='bg-emerald-600 text-white rounded-lg uppercase hover:opacity-95 p-3'
+                >
+                  Contact landlord
+                </button>
+                <button
+                  onClick={() => setShowPayment(true)}
+                  className='bg-orange-600 text-white rounded-lg uppercase hover:opacity-95 p-3 flex items-center gap-2'
+                >
+                  <FaCreditCard />
+                  Make Payment
+                </button>
+              </div>
             )}
             {contact && <Contact listing={listing} />}
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPayment && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+          <div className='bg-white rounded-lg max-w-md w-full mx-4'>
+            <PaymentForm
+              listing={listing}
+              onSuccess={handlePaymentSuccess}
+              onCancel={handlePaymentCancel}
+            />
           </div>
         </div>
       )}

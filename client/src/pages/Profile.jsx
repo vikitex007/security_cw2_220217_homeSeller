@@ -18,6 +18,10 @@ import {
 } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import MFASetup from '../components/MFASetup';
+import ActivityLogs from '../components/ActivityLogs';
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
+
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -28,6 +32,7 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
+  const [activeTab, setActiveTab] = useState('profile'); // profile, mfa, activity, listings
   const dispatch = useDispatch();
 
   // firebase storage
@@ -160,10 +165,10 @@ export default function Profile() {
       console.log(error.message);
     }
   };
-  return (
-    <div className='p-3 max-w-lg mx-auto'>
-      <h1 className='text-3xl font-semibold text-center my-7 text-emerald-800'>My Profile</h1>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+
+  const renderProfileTab = () => (
+    <div className='flex flex-col gap-4'>
+      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <input
           onChange={(e) => setFile(e.target.files[0])}
           type='file'
@@ -175,7 +180,7 @@ export default function Profile() {
           onClick={() => fileRef.current.click()}
           src={formData.avatar || currentUser.avatar}
           alt='profile'
-          className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2 border-4 border-emerald-200'
+          className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'
         />
         <p className='text-sm self-center'>
           {fileUploadError ? (
@@ -183,91 +188,106 @@ export default function Profile() {
               Error Image upload (image must be less than 2 mb)
             </span>
           ) : filePerc > 0 && filePerc < 100 ? (
-            <span className='text-emerald-700'>{`Uploading ${filePerc}%`}</span>
+            <span className='text-slate-700'>{`Uploading ${filePerc}%`}</span>
           ) : filePerc === 100 ? (
-            <span className='text-emerald-700'>Image successfully uploaded!</span>
+            <span className='text-green-700'>Image uploaded successfully</span>
           ) : (
             ''
           )}
         </p>
         <input
           type='text'
-          placeholder='Username'
+          placeholder='username'
           defaultValue={currentUser.username}
           id='username'
-          className='border border-emerald-200 p-3 rounded-lg focus:outline-none focus:border-orange-500 transition-colors'
+          className='border p-3 rounded-lg'
           onChange={handleChange}
         />
         <input
           type='email'
-          placeholder='Email'
-          id='email'
+          placeholder='email'
           defaultValue={currentUser.email}
-          className='border border-emerald-200 p-3 rounded-lg focus:outline-none focus:border-orange-500 transition-colors'
+          id='email'
+          className='border p-3 rounded-lg'
           onChange={handleChange}
         />
         <input
           type='password'
-          placeholder='Password'
-          onChange={handleChange}
+          placeholder='password'
           id='password'
-          className='border border-emerald-200 p-3 rounded-lg focus:outline-none focus:border-orange-500 transition-colors'
+          className='border p-3 rounded-lg'
+          onChange={handleChange}
         />
+        {/* Password strength meter */}
+        <PasswordStrengthMeter password={formData.password || ''} />
         <button
           disabled={loading}
-          className='bg-emerald-600 text-white rounded-lg p-3 uppercase hover:bg-emerald-700 disabled:opacity-80 transition-colors'
+          className='bg-emerald-600 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
         >
-          {loading ? 'Loading...' : 'Update Profile'}
+          {loading ? 'Loading...' : 'Update'}
         </button>
-        <Link
-          className='bg-orange-600 text-white p-3 rounded-lg uppercase text-center hover:bg-orange-700 transition-colors'
-          to={'/create-listing'}
-        >
-          List Your Home
-        </Link>
       </form>
       <div className='flex justify-between mt-5'>
         <span
           onClick={handleDeleteUser}
-          className='text-red-600 cursor-pointer hover:text-red-700 transition-colors'
+          className='text-red-700 cursor-pointer'
         >
           Delete account
         </span>
-        <span onClick={handleSignOut} className='text-red-600 cursor-pointer hover:text-red-700 transition-colors'>
+        <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>
           Sign out
         </span>
       </div>
-
-      <p className='text-red-600 mt-5 text-center'>{error ? error : ''}</p>
-      <p className='text-emerald-700 mt-5 text-center'>
-        {updateSuccess ? 'Profile updated successfully!' : ''}
+      <p className='text-red-700 text-sm'>{error ? error : ''}</p>
+      <p className='text-green-700 text-sm'>
+        {updateSuccess ? 'User is updated successfully!' : ''}
       </p>
-      <button onClick={handleShowListings} className='text-emerald-700 w-full hover:text-orange-600 transition-colors'>
+    </div>
+  );
+
+  const renderMFATab = () => (
+    <div className='flex flex-col gap-4'>
+      <MFASetup />
+    </div>
+  );
+
+  const renderActivityTab = () => (
+    <div className='flex flex-col gap-4'>
+      <ActivityLogs />
+    </div>
+  );
+
+  const renderListingsTab = () => (
+    <div className='flex flex-col gap-4'>
+      <button
+        onClick={handleShowListings}
+        className='bg-emerald-600 text-white p-3 rounded-lg uppercase hover:opacity-95'
+      >
         Show My Listings
       </button>
-      <p className='text-red-600 mt-5 text-center'>
+      <p className='text-red-700 text-sm'>
         {showListingsError ? 'Error showing listings' : ''}
       </p>
 
       {userListings && userListings.length > 0 && (
         <div className='flex flex-col gap-4'>
-          <h1 className='text-center mt-7 text-2xl font-semibold text-emerald-800'>
-            Your Home Listings
+          <h1 className='text-center mt-7 text-2xl font-semibold'>
+            My Listings
           </h1>
           {userListings.map((listing) => (
             <div
               key={listing._id}
-              className='border border-emerald-200 rounded-lg p-3 flex justify-between items-center gap-4 bg-emerald-50'
+              className='border rounded-lg p-3 flex justify-between items-center gap-4'
             >
               <Link to={`/listing/${listing._id}`}>
                 <img
                   src={listing.imageUrls[0]}
                   alt='listing cover'
-                  className='h-16 w-16 object-contain rounded'
+                  className='h-16 w-16 object-cover rounded-lg'
                 />
               </Link>
               <Link
-                className='text-emerald-800 font-semibold  hover:text-orange-600 hover:underline truncate flex-1 transition-colors'
+                className='text-emerald-700 hover:underline truncate flex-1'
                 to={`/listing/${listing._id}`}
               >
                 <p>{listing.name}</p>
@@ -276,18 +296,76 @@ export default function Profile() {
               <div className='flex flex-col item-center'>
                 <button
                   onClick={() => handleListingDelete(listing._id)}
-                  className='text-red-600 uppercase hover:text-red-700 transition-colors'
+                  className='text-red-700 uppercase'
                 >
                   Delete
                 </button>
                 <Link to={`/update-listing/${listing._id}`}>
-                  <button className='text-emerald-700 uppercase hover:text-emerald-800 transition-colors'>Edit</button>
+                  <button className='text-emerald-700 uppercase'>Edit</button>
                 </Link>
               </div>
             </div>
           ))}
         </div>
       )}
+    </div>
+  );
+
+  return (
+    <div className='p-3 max-w-4xl mx-auto'>
+      <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
+      
+      {/* Tab Navigation */}
+      <div className='flex border-b border-gray-200 mb-6'>
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`px-4 py-2 font-medium ${
+            activeTab === 'profile'
+              ? 'text-emerald-600 border-b-2 border-emerald-600'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Profile
+        </button>
+        <button
+          onClick={() => setActiveTab('mfa')}
+          className={`px-4 py-2 font-medium ${
+            activeTab === 'mfa'
+              ? 'text-emerald-600 border-b-2 border-emerald-600'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Security (MFA)
+        </button>
+        <button
+          onClick={() => setActiveTab('activity')}
+          className={`px-4 py-2 font-medium ${
+            activeTab === 'activity'
+              ? 'text-emerald-600 border-b-2 border-emerald-600'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Activity Logs
+        </button>
+        <button
+          onClick={() => setActiveTab('listings')}
+          className={`px-4 py-2 font-medium ${
+            activeTab === 'listings'
+              ? 'text-emerald-600 border-b-2 border-emerald-600'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          My Listings
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className='mt-6'>
+        {activeTab === 'profile' && renderProfileTab()}
+        {activeTab === 'mfa' && renderMFATab()}
+        {activeTab === 'activity' && renderActivityTab()}
+        {activeTab === 'listings' && renderListingsTab()}
+      </div>
     </div>
   );
 }

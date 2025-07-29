@@ -46,7 +46,7 @@ export default function Header() {
             <FaSearch className='text-emerald-600' />
           </button>
         </form>
-        <ul className='flex gap-4'>
+        <ul className='flex gap-4 items-center'>
           <Link to='/'>
             <li className='hidden sm:inline text-emerald-700 hover:text-orange-600 hover:underline transition-colors'>
               Home
@@ -57,6 +57,13 @@ export default function Header() {
               About
             </li>
           </Link>
+          {currentUser && (
+            <Link to='/create-listing'>
+              <li className='hidden sm:inline text-emerald-700 hover:text-orange-600 hover:underline transition-colors'>
+                Add Listing
+              </li>
+            </Link>
+          )}
           <Link to='/profile'>
             {currentUser ? (
               <img

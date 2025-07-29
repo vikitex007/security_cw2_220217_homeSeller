@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 
 export default function SignUp() {
   const [formData, setFormData] = useState({});
@@ -65,7 +66,8 @@ export default function SignUp() {
           id='password'
           onChange={handleChange}
         />
-
+        {/* Password strength meter */}
+        <PasswordStrengthMeter password={formData.password || ''} />
         <button
           disabled={loading}
           className='bg-emerald-600 text-white p-3 rounded-lg uppercase hover:bg-emerald-700 disabled:opacity-80 transition-colors'
