@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  confirmPayment,
   createPaymentIntent,
   getPaymentMethods,
   getTransactionHistory,
@@ -14,7 +13,6 @@ const router = express.Router();
 router.use(verifyToken);
 
 router.post("/create-intent", createPaymentIntent);
-router.post("/confirm", confirmPayment);
 router.get("/transactions", getTransactionHistory);
 router.post("/refund", refundPayment);
 router.get("/payment-methods", getPaymentMethods);

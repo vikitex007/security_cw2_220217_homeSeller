@@ -54,55 +54,6 @@ export const createPaymentIntent = async (req, res, next) => {
   }
 };
 
-export const confirmPayment = async (req, res, next) => {
-  try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const { paymentIntentId, transactionId } = req.body;
-    const { id } = req.user;
-
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
-    if (paymentIntent.status === "succeeded") {
-      await Transaction.findByIdAndUpdate(transactionId, {
-        status: "completed",
-        stripePaymentId: paymentIntent.latest_charge,
-      });
-      await logTransaction(
-        id,
-        "payment_completed",
-        {
-          transactionId: transactionId,
-          paymentIntentId: paymentIntentId,
-          amount: paymentIntent.amount / 100,
-        },
-        { ipAddress: req.ip, userAgent: req.get("User-Agent") }
-      );
-      res
-        .status(200)
-        .json({ success: true, message: "Payment completed successfully!" });
-    } else {
-      await Transaction.findByIdAndUpdate(transactionId, { status: "failed" });
-      await logTransaction(
-        id,
-        "payment_failed",
-        {
-          transactionId: transactionId,
-          paymentIntentId: paymentIntentId,
-          reason: paymentIntent.last_payment_error?.message || "Payment failed",
-        },
-        {
-          ipAddress: req.ip,
-          userAgent: req.get("User-Agent"),
-          status: "failure",
-        }
-      );
-      return next(errorHandler(400, "Payment failed!"));
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const getTransactionHistory = async (req, res, next) => {
   try {
     const { id } = req.user;
