@@ -1,2 +1,2 @@
-// Run this in a Node.js REPL or a .js file
-console.log(require('crypto').randomBytes(32).toString('hex'));// Run this in a Node.js REPL or a .js file
+// to generate a random key for the encryption.
+console.log(require('crypto').randomBytes(32).toString('hex'));

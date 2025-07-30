@@ -27,7 +27,12 @@ export default function OAuth() {
       });
       const data = await res.json();
       dispatch(signInSuccess(data));
-      navigate('/');
+      // Redirect admin users to admin panel, regular users to home
+      if (data.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       console.log('could not sign in with google', error);
     }

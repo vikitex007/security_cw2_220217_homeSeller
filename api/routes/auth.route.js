@@ -4,36 +4,46 @@ import {
   disableMFA,
   enableMFA,
   google,
+  healthCheck,
+  resendVerificationEmail,
   setupMFA,
-  signOut,
   signin,
+  signOut,
   signup,
   testMFAToken,
+  verifyEmail,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../utils/verifyUser.js";
 
 const router = express.Router();
 
-// Rate limiter: 5 requests per minute per IP
+// Rate limiting for auth routes
 const authLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5,
-  message: {
-    success: false,
-    statusCode: 429,
-    message: "Too many requests, please try again later.",
-  },
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: "Too many authentication attempts, please try again later.",
 });
 
-router.post("/signup", authLimiter, signup);
-router.post("/signin", authLimiter, signin);
-router.post("/google", google);
-router.get("/signout", signOut);
+const signupLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // limit each IP to 3 signup attempts per hour
+  message: "Too many signup attempts, please try again later.",
+});
 
-// MFA routes (protected)
-router.post("/mfa/setup", verifyToken, setupMFA);
-router.post("/mfa/enable", verifyToken, enableMFA);
-router.post("/mfa/disable", verifyToken, disableMFA);
-router.get("/mfa/test", verifyToken, testMFAToken);
+router.post("/signup", signupLimiter, signup);
+router.post("/signin", authLimiter, signin);
+router.get("/signout", signOut);
+router.post("/google", google);
+router.get("/health", healthCheck);
+
+// Email verification routes
+router.post("/verify-email/:token", verifyEmail);
+router.post("/resend-verification", resendVerificationEmail);
+
+// MFA routes
+router.post("/setup-mfa", verifyToken, setupMFA);
+router.post("/enable-mfa", verifyToken, enableMFA);
+router.post("/disable-mfa", verifyToken, disableMFA);
+router.get("/test-mfa", verifyToken, testMFAToken);
 
 export default router;

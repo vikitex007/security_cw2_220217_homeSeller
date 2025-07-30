@@ -19,7 +19,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MFASetup from '../components/MFASetup';
-import ActivityLogs from '../components/ActivityLogs';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 
 export default function Profile() {
@@ -32,7 +31,7 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
-  const [activeTab, setActiveTab] = useState('profile'); // profile, mfa, activity, listings
+  const [activeTab, setActiveTab] = useState('profile'); // profile, mfa, listings
   const dispatch = useDispatch();
 
   // firebase storage
@@ -251,11 +250,7 @@ export default function Profile() {
     </div>
   );
 
-  const renderActivityTab = () => (
-    <div className='flex flex-col gap-4'>
-      <ActivityLogs />
-    </div>
-  );
+
 
   const renderListingsTab = () => (
     <div className='flex flex-col gap-4'>
@@ -337,16 +332,7 @@ export default function Profile() {
         >
           Security (MFA)
         </button>
-        <button
-          onClick={() => setActiveTab('activity')}
-          className={`px-4 py-2 font-medium ${
-            activeTab === 'activity'
-              ? 'text-emerald-600 border-b-2 border-emerald-600'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Activity Logs
-        </button>
+
         <button
           onClick={() => setActiveTab('listings')}
           className={`px-4 py-2 font-medium ${
@@ -363,7 +349,6 @@ export default function Profile() {
       <div className='mt-6'>
         {activeTab === 'profile' && renderProfileTab()}
         {activeTab === 'mfa' && renderMFATab()}
-        {activeTab === 'activity' && renderActivityTab()}
         {activeTab === 'listings' && renderListingsTab()}
       </div>
     </div>

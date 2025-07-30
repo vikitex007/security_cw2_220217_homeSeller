@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -10,15 +10,42 @@ import CreateListing from './pages/CreateListing';
 import UpdateListing from './pages/UpdateListing';
 import Listing from './pages/Listing';
 import Search from './pages/Search';
+import AdminPanel from './pages/AdminPanel';
+import AdminRoute from './components/AdminRoute';
+import SessionWarning from './components/SessionWarning';
+import VerifyEmail from './pages/VerifyEmail';
+import { useSelector } from 'react-redux';
 
-export default function App() {
+function AppContent() {
+  const location = useLocation();
+  const { currentUser } = useSelector((state) => state.user);
+  const isAdmin = currentUser && currentUser.role === 'admin';
+  const isAdminPanel = location.pathname === '/admin';
+
+  // If admin is logged in and not on admin panel, redirect to admin panel
+  if (isAdmin && !isAdminPanel) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  // If admin is on admin panel, show only admin panel
+  if (isAdmin && isAdminPanel) {
+    return (
+      <>
+        <AdminPanel />
+        <SessionWarning />
+      </>
+    );
+  }
+
+  // Regular user routes
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/sign-in' element={<SignIn />} />
         <Route path='/sign-up' element={<SignUp />} />
+        <Route path='/verify-email' element={<VerifyEmail />} />
         <Route path='/about' element={<About />} />
         <Route path='/search' element={<Search />} />
         <Route path='/listing/:listingId' element={<Listing />} />
@@ -32,6 +59,15 @@ export default function App() {
           />
         </Route>
       </Routes>
+      <SessionWarning />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

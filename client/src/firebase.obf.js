@@ -1,0 +1,1 @@
+import{initializeApp as a}from"firebase/app";const e={apiKey:"AIzaSyAQmqmkExb5uG9ch6Uyx3eoCkNlx0B5WQc",authDomain:"jagga-bazar.firebaseapp.com",projectId:"jagga-bazar",storageBucket:"mern-estate.appspot.com",messagingSenderId:"495036906071",appId:"1:495036906071:web:21414d6be45be914eec112"};export const app=a(e);

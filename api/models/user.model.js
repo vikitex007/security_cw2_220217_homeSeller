@@ -35,6 +35,19 @@ const userSchema = new mongoose.Schema(
       default:
         "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
     },
+    // Email verification fields
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      default: null,
+    },
+    verificationExpires: {
+      type: Date,
+      default: null,
+    },
     // MFA fields
     mfaEnabled: {
       type: Boolean,
@@ -82,6 +95,9 @@ if (process.env.ENCRYPTION_KEY) {
       "password",
       "role",
       "avatar",
+      "emailVerified",
+      "verificationToken",
+      "verificationExpires",
       "createdAt",
       "updatedAt",
     ],

@@ -13,8 +13,9 @@ import listingRouter from "./routes/listing.route.js";
 import paymentRouter from "./routes/payment.route.js";
 import userRouter from "./routes/user.route.js";
 
-// Load .env from current directory (api folder)
+// Load .env from root directory
 dotenv.config();
+
 
 mongoose
   .connect(process.env.MONGO)
@@ -61,5 +62,3 @@ app.use((err, req, res, next) => {
     message,
   });
 });
-
-// console.log("STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);

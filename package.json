@@ -5,9 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon api/index.js",
-    "start": "node api/index.js",
-    "build": "npm install && npm install --prefix client && npm run build --prefix client"
+    "start": "nodemon api/index.js",
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "build:prod": "cd client && npm run build && npm run obfuscate:prod",
+    "obfuscate:prod": "node obfuscate-prod.js"
   },
   "keywords": [],
   "author": "",
@@ -24,10 +26,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.0",
     "mongoose-encryption": "^2.1.2",
-    "nodemon": "^3.0.1",
+    "nodemailer": "^6.9.7",
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0",
     "stripe": "^14.25.0",
     "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

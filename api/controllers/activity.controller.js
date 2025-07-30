@@ -1,3 +1,5 @@
+import Activity from "../models/activity.model.js";
+import User from "../models/user.model.js";
 import { getActivityLogs } from "../utils/activityLogger.js";
 
 export const getUserActivityLogs = async (req, res, next) => {
@@ -135,6 +137,232 @@ export const exportActivityLogs = async (req, res, next) => {
         totalRecords: logs.length,
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUsersActivityLogs = async (req, res, next) => {
+  try {
+    const {
+      page = 1,
+      limit = 20,
+      userId,
+      action,
+      status,
+      severity,
+      startDate,
+      endDate,
+    } = req.query;
+
+    const filter = {};
+
+    if (userId) filter.userId = userId;
+    if (action) filter.action = action;
+    if (status) filter.status = status;
+    if (severity) filter.severity = severity;
+    if (startDate && endDate) {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const logs = await Activity.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate("userId", "username email");
+
+    const total = await Activity.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      logs,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      total,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAdminDashboard = async (req, res, next) => {
+  try {
+    // Get total users
+    const totalUsers = await User.countDocuments();
+
+    // Get recent activities (last 24 hours)
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const recentActivities = await Activity.countDocuments({
+      createdAt: { $gte: last24Hours },
+    });
+
+    // Get failed login attempts
+    const failedLogins = await Activity.countDocuments({
+      action: "login_failed",
+      createdAt: { $gte: last24Hours },
+    });
+
+    // Get critical security events
+    const criticalEvents = await Activity.countDocuments({
+      severity: "critical",
+      createdAt: { $gte: last24Hours },
+    });
+
+    // Get user activity by action type
+    const actionStats = await Activity.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: last24Hours },
+        },
+      },
+      {
+        $group: {
+          _id: "$action",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]);
+
+    // Get recent users
+    const recentUsers = await User.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select("username email createdAt");
+
+    res.status(200).json({
+      success: true,
+      dashboard: {
+        totalUsers,
+        recentActivities,
+        failedLogins,
+        criticalEvents,
+        actionStats,
+        recentUsers,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserDetails = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Get user's recent activities
+    const recentActivities = await Activity.find({ userId: userId })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    // Get user's login history
+    const loginHistory = await Activity.find({
+      userId: userId,
+      action: { $in: ["login_success", "login_failed"] },
+    })
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    // Get user's security events
+    const securityEvents = await Activity.find({
+      userId: userId,
+      severity: { $in: ["high", "critical"] },
+    })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.status(200).json({
+      success: true,
+      user,
+      recentActivities,
+      loginHistory,
+      securityEvents,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20, search } = req.query;
+
+    const filter = {};
+    if (search) {
+      filter.$or = [
+        { username: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const users = await User.find(filter)
+      .select("-password")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await User.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      users,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      total,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUserRole = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { role } = req.body;
+
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid role. Must be "user" or "admin"',
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { role },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
   } catch (error) {
     next(error);
   }

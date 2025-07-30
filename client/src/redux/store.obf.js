@@ -1,0 +1,1 @@
+import{combineReducers as r,configureStore as e}from"@reduxjs/toolkit";import o from"./user/userSlice";import{persistReducer as s,persistStore as t}from"redux-persist";import i from"redux-persist/lib/storage";const m=r({user:o}),p={key:"root",storage:i,version:1},u=s(p,m);export const store=e({reducer:u,middleware:r=>r({serializableCheck:!1})});export const persistor=t(store);

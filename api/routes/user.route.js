@@ -17,8 +17,8 @@ router.get("/listings/:id", verifyToken, getUserListings);
 router.get("/:id", verifyToken, getUser);
 
 // Example admin-only route
-router.get("/admin/only", verifyToken, verifyRole(["admin"]), (req, res) => {
-  res.json({ message: "You are an admin!" });
-});
+// router.get("/admin/only", verifyToken, verifyRole(["admin"]), (req, res) => {
+//   res.json({ message: "You are an admin!" });
+// });
 
 export default router;

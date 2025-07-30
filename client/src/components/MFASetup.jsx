@@ -27,7 +27,7 @@ export default function MFASetup() {
       setLoading(true);
       setError('');
       
-      const res = await fetch('/api/auth/mfa/setup', {
+      const res = await fetch('/api/auth/setup-mfa', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ export default function MFASetup() {
       setLoading(true);
       setError('');
       
-      const res = await fetch('/api/auth/mfa/enable', {
+      const res = await fetch('/api/auth/enable-mfa', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export default function MFASetup() {
       setLoading(true);
       setError('');
       
-      const res = await fetch('/api/auth/mfa/disable', {
+      const res = await fetch('/api/auth/disable-mfa', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

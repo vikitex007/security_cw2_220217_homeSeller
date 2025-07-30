@@ -60,7 +60,7 @@ export default function Home() {
           We connect you with qualified buyers and provide expert guidance throughout your selling journey.
         </div>
         <Link
-          to={'/search'}
+          to={'/create-listing'}
           className='text-xs sm:text-sm text-orange-600 font-bold hover:text-emerald-700 hover:underline transition-colors'
         >
           Start selling your home today...

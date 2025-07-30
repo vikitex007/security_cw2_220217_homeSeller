@@ -64,6 +64,13 @@ export default function Header() {
               </li>
             </Link>
           )}
+          {currentUser && currentUser.role === 'admin' && (
+            <Link to='/admin'>
+              <li className='hidden sm:inline text-purple-700 hover:text-purple-600 hover:underline transition-colors font-medium'>
+                Admin Panel
+              </li>
+            </Link>
+          )}
           <Link to='/profile'>
             {currentUser ? (
               <img
