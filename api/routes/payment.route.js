@@ -7,7 +7,13 @@ import {
 } from "../controllers/payment.controller.js";
 import { verifyToken } from "../utils/verifyUser.js";
 
+
+
+
 const router = express.Router();
+
+
+
 
 // All payment routes require authentication
 router.use(verifyToken);
