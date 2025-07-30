@@ -10,6 +10,8 @@ export const generateMFASecret = () => {
   });
 };
 
+
+
 export const generateMFAToken = (secret) => {
   return speakeasy.totp({
     secret: secret,
@@ -17,6 +19,8 @@ export const generateMFAToken = (secret) => {
     window: 2, // Allow 2 time steps (60 seconds) for clock skew
   });
 };
+
+
 
 export const verifyMFAToken = (token, secret) => {
   return speakeasy.totp.verify({
