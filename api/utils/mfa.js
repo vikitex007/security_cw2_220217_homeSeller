@@ -10,8 +10,6 @@ export const generateMFASecret = () => {
   });
 };
 
-
-
 export const generateMFAToken = (secret) => {
   return speakeasy.totp({
     secret: secret,
