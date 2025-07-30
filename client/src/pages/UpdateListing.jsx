@@ -8,6 +8,7 @@ import {
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { addCsrfHeader } from '../utils/csrf';
 
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
@@ -150,9 +151,10 @@ export default function CreateListing() {
       setError(false);
       const res = await fetch(`/api/listing/update/${params.listingId}`, {
         method: 'POST',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
         body: JSON.stringify({
           ...formData,
           userRef: currentUser._id,

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { updateUserSuccess } from '../redux/user/userSlice';
+import { addCsrfHeader } from '../utils/csrf';
 
 export default function MFASetup() {
   const [step, setStep] = useState('setup'); // setup, verify, enabled
@@ -29,9 +30,10 @@ export default function MFASetup() {
       
       const res = await fetch('/api/auth/setup-mfa', {
         method: 'POST',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
       });
       
       const data = await res.json();
@@ -59,9 +61,10 @@ export default function MFASetup() {
       
       const res = await fetch('/api/auth/enable-mfa', {
         method: 'POST',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
         body: JSON.stringify({ token }),
       });
       
@@ -94,9 +97,10 @@ export default function MFASetup() {
       
       const res = await fetch('/api/auth/disable-mfa', {
         method: 'POST',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
         body: JSON.stringify({ token }),
       });
       

@@ -3,6 +3,7 @@ import { app } from '../firebase';
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice';
 import { useNavigate } from 'react-router-dom';
+import { addCsrfHeader } from '../utils/csrf';
 
 export default function OAuth() {
   const dispatch = useDispatch();
@@ -16,9 +17,10 @@ export default function OAuth() {
 
       const res = await fetch('/api/auth/google', {
         method: 'POST',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
         body: JSON.stringify({
           name: result.user.displayName,
           email: result.user.email,

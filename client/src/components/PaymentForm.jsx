@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import { useSelector } from 'react-redux';
+import { addCsrfHeader } from '../utils/csrf';
 
 export default function PaymentForm({ listing, onSuccess, onCancel }) {
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,10 @@ export default function PaymentForm({ listing, onSuccess, onCancel }) {
       setError('');
       const res = await fetch('/api/payment/create-intent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: addCsrfHeader({
+          'Content-Type': 'application/json'
+        }),
+        credentials: 'include',
         body: JSON.stringify({
           listingId: listing._id,
           amount: amount,

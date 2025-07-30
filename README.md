@@ -11,6 +11,7 @@ A real estate platform for buying and selling properties.
 - **Email Verification** - Secure account verification
 - **MFA Support** - Two-factor authentication
 - **Session Management** - Automatic logout after inactivity
+- **CSRF Protection** - Cross-Site Request Forgery protection
 
 ## Quick Start
 

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -14,7 +15,9 @@ import AdminPanel from './pages/AdminPanel';
 import AdminRoute from './components/AdminRoute';
 import SessionWarning from './components/SessionWarning';
 import VerifyEmail from './pages/VerifyEmail';
+import CSRFTest from './pages/CSRFTest';
 import { useSelector } from 'react-redux';
+import { initializeCsrf } from './utils/csrf';
 
 function AppContent() {
   const location = useLocation();
@@ -49,6 +52,7 @@ function AppContent() {
         <Route path='/about' element={<About />} />
         <Route path='/search' element={<Search />} />
         <Route path='/listing/:listingId' element={<Listing />} />
+        <Route path='/csrf-test' element={<CSRFTest />} />
 
         <Route element={<PrivateRoute />}>
           <Route path='/profile' element={<Profile />} />
@@ -65,6 +69,11 @@ function AppContent() {
 }
 
 export default function App() {
+  useEffect(() => {
+    // Initialize CSRF protection on app startup
+    initializeCsrf();
+  }, []);
+
   return (
     <BrowserRouter>
       <AppContent />

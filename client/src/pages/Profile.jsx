@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MFASetup from '../components/MFASetup';
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
+import { addCsrfHeader } from '../utils/csrf';
 
 export default function Profile() {
   const fileRef = useRef(null);
@@ -80,9 +81,10 @@ export default function Profile() {
       dispatch(updateUserStart());
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: 'POST',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
       const data = await res.json();
@@ -103,6 +105,8 @@ export default function Profile() {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: 'DELETE',
+        headers: addCsrfHeader(),
+        credentials: 'include',
       });
       const data = await res.json();
       if (data.success === false) {
@@ -118,7 +122,11 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch('/api/auth/signout');
+      const res = await fetch('/api/auth/signout', {
+        method: 'POST',
+        headers: addCsrfHeader(),
+        credentials: 'include',
+      });
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
@@ -150,6 +158,8 @@ export default function Profile() {
     try {
       const res = await fetch(`/api/listing/delete/${listingId}`, {
         method: 'DELETE',
+        headers: addCsrfHeader(),
+        credentials: 'include',
       });
       const data = await res.json();
       if (data.success === false) {

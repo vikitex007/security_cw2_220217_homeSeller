@@ -7,6 +7,7 @@ import {
   signInFailure,
 } from '../redux/user/userSlice';
 import OAuth from '../components/OAuth';
+import { addCsrfHeader } from '../utils/csrf';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
@@ -38,9 +39,10 @@ export default function SignIn() {
       
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
         body: JSON.stringify(requestBody),
       });
       

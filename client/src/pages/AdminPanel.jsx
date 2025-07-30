@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { addCsrfHeader } from '../utils/csrf';
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -119,9 +120,10 @@ export default function AdminPanel() {
     try {
       const res = await fetch(`/api/activity/admin/user/${userId}/role`, {
         method: 'PUT',
-        headers: {
+        headers: addCsrfHeader({
           'Content-Type': 'application/json',
-        },
+        }),
+        credentials: 'include',
         body: JSON.stringify({ role: newRole }),
       });
       
