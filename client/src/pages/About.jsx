@@ -8,7 +8,8 @@ export default function About() {
       <p className='mb-4 text-emerald-700'>
       Our mission is to help homeowners achieve their selling goals by providing expert market analysis, strategic pricing, professional marketing, and personalized service throughout the entire selling journey. Whether you're selling your first home or your investment property, we're here to maximize your return and minimize your stress.
       </p>
-      <p className='mb-4 text-emerald-700'>Our hellp world hello world team of certified agents has extensive experience in the real estate market, and we are committed to providing the highest level of service to our clients. We believe that selling your home should be an exciting and rewarding experience, and we are dedicated to making that a reality for each and every homeowner we serve.</p>
+      <p className='mb-4 text-emerald-700'>Our team of certified agents has extensive experience in the real estate market, and we are committed to providing the highest level of service to our clients. We believe that selling your home should be an exciting and rewarding experience, and we are dedicated to making that a reality for each and every homeowner we serve.</p>
     </div>
   )
 }
+ 
