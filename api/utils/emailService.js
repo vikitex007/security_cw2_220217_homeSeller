@@ -21,11 +21,9 @@ const createTransporter = () => {
 export const sendVerificationEmail = async (email, token, username) => {
   try {
     const transporter = createTransporter();
-
     const verificationUrl = `${
       process.env.FRONTEND_URL || "http://localhost:5173"
     }/verify-email?token=${token}`;
-
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -35,15 +33,12 @@ export const sendVerificationEmail = async (email, token, username) => {
           <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 30px; border-radius: 10px; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to HomeSell Pro!</h1>
           </div>
-          
           <div style="padding: 30px; background: #f9fafb; border-radius: 0 0 10px 10px;">
             <h2 style="color: #374151; margin-bottom: 20px;">Hi ${username},</h2>
-            
             <p style="color: #6b7280; line-height: 1.6; margin-bottom: 25px;">
               Thank you for creating your HomeSell Pro account! To complete your registration, 
               please verify your email address by clicking the button below.
-            </p>
-            
+            </p
             <div style="text-align: center; margin: 30px 0;">
               <a href="${verificationUrl}" 
                  style="background: #10b981; color: white; padding: 15px 30px; 
@@ -52,16 +47,12 @@ export const sendVerificationEmail = async (email, token, username) => {
                 Verify Email Address
               </a>
             </div>
-            
             <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
               If the button doesn't work, you can copy and paste this link into your browser:
             </p>
-            
-            <p style="color: #10b981; font-size: 14px; word-break: break-all; 
+            < style="color: #10b981; font-size: 14px; word-break: break-all; 
                        background: #f0fdf4; padding: 15px; border-radius: 5px; border-left: 4px solid #10b981;">
               ${verificationUrl}
-            </p>
-            
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
               <p style="color: #9ca3af; font-size: 12px; margin: 0;">
                 <strong>Important:</strong> This verification link will expire in 24 hours. 

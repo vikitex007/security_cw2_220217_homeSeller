@@ -17,9 +17,6 @@ export const generateMFAToken = (secret) => {
     window: 2, // Allow 2 time steps (60 seconds) for clock skew
   });
 };
-
-
-
 export const verifyMFAToken = (token, secret) => {
   return speakeasy.totp.verify({
     secret: secret,
@@ -28,7 +25,6 @@ export const verifyMFAToken = (token, secret) => {
     window: 2,
   });
 };
-
 export const generateBackupCodes = (count = 8) => {
   const codes = [];
   for (let i = 0; i < count; i++) {
@@ -36,11 +32,9 @@ export const generateBackupCodes = (count = 8) => {
   }
   return codes;
 };
-
 export const verifyBackupCode = (code, backupCodes) => {
   return backupCodes.includes(code.toUpperCase());
 };
-
 export const generateQRCode = async (secret, email) => {
   const otpauth = speakeasy.otpauthURL({
     secret: secret,

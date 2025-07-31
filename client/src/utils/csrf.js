@@ -25,6 +25,7 @@ export const getCurrentCsrfToken = () => {
   return csrfToken;
 };
 
+
 // Add CSRF token to request headers
 export const addCsrfHeader = (headers = {}) => {
   if (csrfToken) {
