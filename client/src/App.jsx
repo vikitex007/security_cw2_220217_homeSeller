@@ -15,7 +15,6 @@ import AdminPanel from './pages/AdminPanel';
 import AdminRoute from './components/AdminRoute';
 import SessionWarning from './components/SessionWarning';
 import VerifyEmail from './pages/VerifyEmail';
-import CSRFTest from './pages/CSRFTest';
 import { useSelector } from 'react-redux';
 import { initializeCsrf } from './utils/csrf';
 
@@ -52,7 +51,6 @@ function AppContent() {
         <Route path='/about' element={<About />} />
         <Route path='/search' element={<Search />} />
         <Route path='/listing/:listingId' element={<Listing />} />
-        <Route path='/csrf-test' element={<CSRFTest />} />
 
         <Route element={<PrivateRoute />}>
           <Route path='/profile' element={<Profile />} />

@@ -32,7 +32,7 @@ const signupLimiter = rateLimit({
 
 router.post("/signup", signupLimiter, signup);
 router.post("/signin", authLimiter, signin);
-router.get("/signout", signOut);
+router.post("/signout", signOut);
 router.post("/google", google);
 router.get("/health", healthCheck);
 

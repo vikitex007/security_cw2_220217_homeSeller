@@ -52,8 +52,13 @@ app.use(mongoSanitize());
 app.use(hpp());
 app.use(doubleCsrfProtection);
 
-app.listen(3000, () => {
+app.listen(3000, "0.0.0.0", () => {
   console.log("Server is running on port 3000!");
+});
+
+// Test endpoint
+app.get("/api/test", (req, res) => {
+  res.json({ message: "Backend server is running!" });
 });
 
 // CSRF Token endpoint

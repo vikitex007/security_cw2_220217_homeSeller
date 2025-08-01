@@ -55,16 +55,16 @@ class SessionManager {
     // Clear the session
     store.dispatch(signOutUserSuccess());
 
+    // Clear persisted Redux state
+    localStorage.removeItem("persist:root");
+    sessionStorage.clear();
+
     // Clear cookies
     document.cookie.split(";").forEach(function (c) {
       document.cookie = c
         .replace(/^ +/, "")
         .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
-
-    // Clear localStorage
-    localStorage.clear();
-    sessionStorage.clear();
 
     // Redirect to sign-in page
     window.location.href = "/sign-in";
